@@ -1,0 +1,115 @@
+*&---------------------------------------------------------------------*
+*& Report ZSELECIONAR_DADOS_02
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zselecionar_dados_02.
+
+"DATA: t_ordem TYPE STANDARD TABLE OF vbak.
+
+"seleciona todos os campos da
+
+"SELECT *
+"FROM vbak
+"INTO TABLE t_ordem.
+
+"seleciona campos especificos da tabela
+
+"DATA: t_itens TYPE ztt_item_recusado.
+
+"SELECT vbeln posnr matnr abgru
+" from vbap
+"into table t_itens.
+
+
+"Seleciona os campos especificos numa sequencia diferente da tabela de destino
+
+"DATA: t_item TYPE STANDARD TABLE OF vbap.
+
+"SELECT pmatn posnr posar vbeln
+"from vbap
+"into CORRESPONDING FIELDS of TABLE t_item.
+
+"declaração inline cria tabela interna dinamicamente durante a seleção
+
+" SELECT matnr, meins
+" from mara
+" into table @DATA(t_material).
+
+"selecionar apenas um registro da tabela
+
+"select SINGLE matnr, meins, ernam, mtart
+" from mara
+" into @DATA(s_material).
+
+"seleção com condições
+
+"select vbeln, erdat, ernam
+" from vbak
+" into table @DATA(t_ordens)
+" where ernam = 'LANDRADE' and erdat > '20191001'.
+
+"seleção com condições e parametros de tela
+
+"PARAMETERS: p_nome TYPE vbak-ernam,
+" p_data type vbak-erdat.
+
+"SELECT vbeln, erdat, ernam
+"FROM vbak
+" INTO TABLE @DATA(t_ordens)
+" where ernam = @p_nome AND erdat > @p_data.
+
+"Junção de dados de diferentes tabelas - join
+"
+"SELECT vbak~vbeln, vbak~kunnr,
+"     vbap~posnr, vbap~matnr
+" into table @DATA(t_vendas)
+" from vbak
+" inner join vbap
+" on vbak~vbeln = vbap~vbeln.
+
+"junção de dados com resutado na primeira tablea
+"
+"SELECT vbak~vbeln, vbak~kunnr,
+" vbap~posnr, vbap~matnr
+"INTO TABLE @DATA(t_ordens)
+"from vbak
+"left outer join vbap
+"on vbak~vbeln = vbap~vbeln.
+
+"slecionando dados de tabelas diferentes em momentos diferentes
+"
+"primeira tabela
+
+"SELECT vbeln, kunnr
+" FROM vbak
+" INTO TABLE @DATA(t_ordens)
+" WHERE kunnr = '0000000001'.
+
+" selecionar segunda tabela
+
+
+"SELECT vbeln, posnr, matnr
+" FROM vbap
+" INTO TABLE @DATA(t_itens)
+" FOR ALL ENTRIES IN @t_ordens
+" WHERE vbeln = @t_ordens-vbeln.
+
+" seleção baseada em lista de valores - selec-options - range
+
+DATA: s_ordem TYPE vbak.
+
+SELECT-OPTIONS:
+
+s_doc FOR s_ordem-vbeln,
+s_cli FOR s_ordem-kunnr.
+
+SELECT vbeln, kunnr
+  INTO TABLE @DATA(t_ordens)
+  FROM vbak
+  WHERE vbeln IN @s_doc
+  AND  kunnr IN @s_cli.
+
+
+
+BREAK-POINT.
